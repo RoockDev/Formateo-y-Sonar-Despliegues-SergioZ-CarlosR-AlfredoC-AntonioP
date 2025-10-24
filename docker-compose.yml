@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+web:
+build: .
+ports:
+- "8000:8000"
+environment:
+- SECRET_KEY=devkey
+- DEFAULT_ADMIN_PASSWORD=admin123
+- FEATURE_FLAG=on
+volumes:
+- ./:/app
