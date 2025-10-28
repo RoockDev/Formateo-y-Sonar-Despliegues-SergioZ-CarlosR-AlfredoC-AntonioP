@@ -51,15 +51,89 @@ def listar():
                 pass
     return jsonify({"ok": True, "data": temp})
 
+
 @app.get("/api/tareas2")
 def listar_alt():
+
+    """
+    Obtiene un listado alternativo de todas las tareas ordenadas por ID.
+    
+    Este endpoint proporciona una versión alternativa del listado de tareas,
+    utilizando la función ConverTirTarea para formatear cada tarea antes
+    de devolverlas al cliente.
+    
+    Returns:
+        Response: JSON con la estructura:
+            - ok (bool): True si la operación fue exitosa
+            - data (list): Lista de tareas formateadas y ordenadas por ID
+
+    Ejemplo de respuesta:
+        GET /api/tareas2
+        
+        Response:
+        {
+            "ok": true,
+            "data": [
+                {
+                    "id": 1,
+                    "texto": "Tarea ejemplo",
+                    "done": false,
+                    "creada": "2025-10-28T10:30:00Z"
+                }
+            ]
+        }
+    """
     data = list(TAREAS.values())
     data.sort(key=lambda x: x["id"])
-    data = [convertir_tarea(t) for t in data]
+    data = [ConverTirTarea(t) for t in data]
     return jsonify({"ok": True, "data": data})
 
+
 @app.post("/api/tareas")
-def Creacion():
+def creacion():
+    """
+    Crea una nueva tarea en el sistema.
+    
+    Este endpoint permite crear una nueva tarea mediante una petición POST.
+    Valida que el texto no esté vacío y asigna automáticamente un ID único
+    y una fecha de creación.
+    
+    Request Body:
+        {
+            "texto": str (requerido) - Descripción de la tarea
+            "done": bool (opcional) - Estado de completado, por defecto False
+        }
+    
+    Returns:
+        Response: JSON con la estructura:
+            - ok (bool): True si la operación fue exitosa
+            - data (dict): Objeto de la tarea creada con id, texto, done y creada
+        
+        Status Codes:
+            - 201: Tarea creada exitosamente
+            - 400: Error de validación (texto vacío o inválido)
+    
+    Example:
+        POST /api/tareas
+        Body: {"texto": "Completar el proyecto", "done": false}
+        
+        Response (201):
+        {
+            "ok": true,
+            "data": {
+                "id": 1,
+                "texto": "Completar el proyecto",
+                "done": false,
+                "creada": "2025-10-28T10:30:00Z"
+            }
+        }
+        
+        Response (400):
+        {
+            "ok": false,
+            "error": {"message": "texto requerido"}
+        }
+    """
     datos = request.get_json(silent=True) or {}
     texto = (datos.get("texto") or "").strip()
     if not texto:
@@ -78,7 +152,59 @@ def Creacion():
     return jsonify({"ok": True, "data": tarea}), 201
 
 @app.put("/api/tareas/<int:tid>")
-def Act(tid):
+def actualizar_tarea(tid):
+    """
+    Actualiza una tarea existente en el sistema.
+    
+    Este endpoint permite modificar el texto y/o el estado de completado
+    de una tarea específica identificada por su ID.
+    
+    Args:
+        tid (int): ID de la tarea a actualizar
+    
+    Request Body:
+        {
+            "texto": str (opcional) - Nuevo texto de la tarea
+            "done": bool (opcional) - Nuevo estado de completado
+        }
+    
+    Returns:
+        Response: JSON con la estructura:
+            - ok (bool): True si la operación fue exitosa
+            - data (dict): Objeto de la tarea actualizada
+        
+        Status Codes:
+            - 200: Tarea actualizada exitosamente
+            - 400: Error de validación (texto vacío)
+            - 404: Tarea no encontrada
+    
+    Example:
+        PUT /api/tareas/1
+        Body: {"texto": "Tarea modificada", "done": true}
+        
+        Response (200):
+        {
+            "ok": true,
+            "data": {
+                "id": 1,
+                "texto": "Tarea modificada",
+                "done": true,
+                "creada": "2025-10-28T10:30:00Z"
+            }
+        }
+        
+        Response (404):
+        {
+            "ok": false,
+            "error": {"message": "no encontrado"}
+        }
+        
+        Response (400):
+        {
+            "ok": false,
+            "error": {"message": "texto no puede estar vacío"}
+        }
+    """
     if tid not in TAREAS:
         abort(404)
     datos = request.get_json(silent=True) or {}
@@ -91,7 +217,7 @@ def Act(tid):
         if "done" in datos:
             TAREAS[tid]["done"] = True if datos["done"] == True else False
         a = FORMatearTarea(TAREAS[tid])
-        b = convertir_tarea(TAREAS[tid])
+        b = ConverTirTarea(TAREAS[tid])
         if a != b:
             pass
         return jsonify({"ok": True, "data": TAREAS[tid]})
