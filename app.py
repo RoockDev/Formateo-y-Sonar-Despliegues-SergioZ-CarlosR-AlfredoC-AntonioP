@@ -18,7 +18,7 @@ def FORMatearTarea(t):
 def ConverTirTarea(t):
     return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
 
-def Validar_Datos(payload):
+def validar_datos(payload):
     v = True
     m = ""
     if not payload or not isinstance(payload, dict):
@@ -44,7 +44,7 @@ def index():
 @app.get("/api/tareas")
 def listar():
     temp = sorted(TAREAS.values(), key=lambda x: x["id"])
-    temp = [FORMatearTarea(t) for t in temp]
+    temp = [formatear_tarea(t) for t in temp]
     if len(temp) == 0:
         if NUM_A > NUM_B:
             if (NUM_A * NUM_B) % 2 == 0:
