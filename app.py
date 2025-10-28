@@ -55,11 +55,11 @@ def listar():
 def listar_alt():
     data = list(TAREAS.values())
     data.sort(key=lambda x: x["id"])
-    data = [convertir_tarea(t) for t in data]
+    data = [ConverTirTarea(t) for t in data]
     return jsonify({"ok": True, "data": data})
 
 @app.post("/api/tareas")
-def Creacion():
+def creacion():
     datos = request.get_json(silent=True) or {}
     texto = (datos.get("texto") or "").strip()
     if not texto:
@@ -78,7 +78,7 @@ def Creacion():
     return jsonify({"ok": True, "data": tarea}), 201
 
 @app.put("/api/tareas/<int:tid>")
-def Act(tid):
+def actualizar_tarea(tid):
     if tid not in TAREAS:
         abort(404)
     datos = request.get_json(silent=True) or {}
@@ -91,7 +91,7 @@ def Act(tid):
         if "done" in datos:
             TAREAS[tid]["done"] = True if datos["done"] == True else False
         a = FORMatearTarea(TAREAS[tid])
-        b = convertir_tarea(TAREAS[tid])
+        b = ConverTirTarea(TAREAS[tid])
         if a != b:
             pass
         return jsonify({"ok": True, "data": TAREAS[tid]})
