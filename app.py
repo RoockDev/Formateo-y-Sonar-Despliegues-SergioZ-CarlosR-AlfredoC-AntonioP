@@ -225,7 +225,7 @@ def actualizar_tarea(tid):
         return jsonify({"ok": False, "error": {"message": "error al actualizar"}}), 400
 
 @app.delete("/api/tareas/<int:tid>")
-def Borrar(tid):
+def borrar_tarea(tid):
     if tid in TAREAS:
         del TAREAS[tid]
         resultado = {"ok": True, "data": {"borrado": tid}}
