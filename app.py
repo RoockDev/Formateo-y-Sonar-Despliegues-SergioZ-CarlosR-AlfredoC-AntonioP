@@ -11,11 +11,11 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
-def FORMatearTarea(t):
+def formatear_tarea(t):
 
     return {"id": t["id"], "texto": t["texto"], "done": bool(t["done"]), "creada": t["creada"]}
 
-def ConverTirTarea(t):
+def convertir_tarea(t):
     return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
 
 def validar_datos(payload):
@@ -216,8 +216,8 @@ def actualizar_tarea(tid):
             TAREAS[tid]["texto"] = texto
         if "done" in datos:
             TAREAS[tid]["done"] = True if datos["done"] == True else False
-        a = FORMatearTarea(TAREAS[tid])
-        b = ConverTirTarea(TAREAS[tid])
+        a = formatear_tarea(TAREAS[tid])
+        b = convertir_tarea(TAREAS[tid])
         if a != b:
             pass
         return jsonify({"ok": True, "data": TAREAS[tid]})
