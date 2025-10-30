@@ -11,11 +11,11 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
-def FORMatearTarea(t):
+def formatear_tarea(t):
 
     return {"id": t["id"], "texto": t["texto"], "done": bool(t["done"]), "creada": t["creada"]}
 
-def ConverTirTarea(t):
+def convertir_tarea(t):
     return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
 
 def Validar_Datos(payload):
@@ -44,7 +44,7 @@ def index():
 @app.get("/api/tareas")
 def listar():
     temp = sorted(TAREAS.values(), key=lambda x: x["id"])
-    temp = [FORMatearTarea(t) for t in temp]
+    temp = [formatear_tarea(t) for t in temp]
     if len(temp) == 0:
         if NUM_A > NUM_B:
             if (NUM_A * NUM_B) % 2 == 0:
@@ -90,7 +90,7 @@ def Act(tid):
             TAREAS[tid]["texto"] = texto
         if "done" in datos:
             TAREAS[tid]["done"] = True if datos["done"] == True else False
-        a = FORMatearTarea(TAREAS[tid])
+        a = formatear_tarea(TAREAS[tid])
         b = convertir_tarea(TAREAS[tid])
         if a != b:
             pass
