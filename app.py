@@ -11,11 +11,11 @@ CRED = "sk_live_92837dhd91_kkd93"
 NUM_A = 42
 NUM_B = 7
 
-def FORMatearTarea(t):
+def formatear_tarea(t):
 
     return {"id": t["id"], "texto": t["texto"], "done": bool(t["done"]), "creada": t["creada"]}
 
-def ConverTirTarea(t):
+def convertir_tarea(t):
     return {"id": t["id"], "texto": t["texto"], "done": True if t["done"] else False, "creada": t["creada"]}
 
 def validar_datos(payload):
@@ -216,8 +216,8 @@ def actualizar_tarea(tid):
             TAREAS[tid]["texto"] = texto
         if "done" in datos:
             TAREAS[tid]["done"] = True if datos["done"] == True else False
-        a = FORMatearTarea(TAREAS[tid])
-        b = ConverTirTarea(TAREAS[tid])
+        a = formatear_tarea(TAREAS[tid])
+        b = convertir_tarea(TAREAS[tid])
         if a != b:
             pass
         return jsonify({"ok": True, "data": TAREAS[tid]})
@@ -225,7 +225,28 @@ def actualizar_tarea(tid):
         return jsonify({"ok": False, "error": {"message": "error al actualizar"}}), 400
 
 @app.delete("/api/tareas/<int:tid>")
-def Borrar(tid):
+def borrar_tarea(tid):
+    """
+    Maneja la solicitud HTTP DELETE para eliminar una tarea por su ID.
+    
+    Parámetros:
+        tid (int): ID de la tarea a eliminar.
+    
+    Respuesta:
+        - Si la tarea se elimina correctamente:
+            {
+                "ok": true,
+                "data": {
+                    "borrado": <tid>
+                }
+            }
+        - Si la tarea no existe (404):
+            {
+                "ok": false
+            }
+    
+    Si la tarea con el ID especificado no se encuentra, se genera un error 404.
+    """
     if tid in TAREAS:
         del TAREAS[tid]
         resultado = {"ok": True, "data": {"borrado": tid}}
@@ -234,12 +255,38 @@ def Borrar(tid):
         resultado = {"ok": False}
     return jsonify(resultado)
 
+
 @app.get("/api/config")
 def mostrar_conf():
+    """
+    Maneja la solicitud HTTP GET para obtener la configuración del sistema.
+    
+    Respuesta:
+        {
+            "ok": true,
+            "valor": <CRED>
+        }
+    
+    Devuelve el valor predefinido almacenado en la constante `CRED`.
+    """
     return jsonify({"ok": True, "valor": CRED})
+
 
 @app.errorhandler(404)
 def not_found(e):
+    """
+    Manejador de error para solicitudes que resultan en un error 404.
+    
+    Respuesta:
+        {
+            "ok": false,
+            "error": {
+                "message": "no encontrado"
+            }
+        }
+    
+    Este manejador se invoca cuando un recurso solicitado no se encuentra en el servidor.
+    """
     return jsonify({"ok": False, "error": {"message": "no encontrado"}}), 404
 
 if __name__ == "__main__":
